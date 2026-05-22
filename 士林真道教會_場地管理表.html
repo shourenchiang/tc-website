@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>士林真道教會｜場地使用管理表</title>
+  <style>
+    /* ===== RESET & BASE ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: #F4F5F7;
+      color: #2C3E50;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ===== PAGES ===== */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ===== FORM PAGE ===== */
+    .page {
+      max-width: 720px;
+      margin: 36px auto;
+      padding: 0 16px 60px;
+    }
+
+    .header {
+      background: #2C3E50;
+      color: #fff;
+      border-radius: 12px 12px 0 0;
+      padding: 28px 32px 24px;
+    }
+    .header h1 { font-size: 20px; font-weight: 700; letter-spacing: 1px; }
+    .header p { margin-top: 4px; font-size: 13px; opacity: 0.6; }
+
+    .card {
+      background: #fff;
+      padding: 28px 32px;
+      border-bottom: 1px solid #EAECEF;
+    }
+    .card:last-of-type {
+      border-radius: 0 0 12px 12px;
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #7F8C8D;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    .type-selector { display: flex; gap: 10px; flex-wrap: wrap; }
+    .type-btn {
+      flex: 1; min-width: 120px;
+      padding: 12px 8px;
+      border: 2px solid #EAECEF;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px; font-weight: 600;
+      color: #7F8C8D;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .type-btn:hover { border-color: #BDC3C7; color: #2C3E50; }
+    .type-btn.active-open  { border-color: #27AE60; background: #EAFAF1; color: #27AE60; }
+    .type-btn.active-close { border-color: #E74C3C; background: #FDEDEC; color: #E74C3C; }
+    .type-btn.active-damage{ border-color: #E67E22; background: #FEF9E7; color: #E67E22; }
+    .type-label { font-size: 18px; display: block; margin-bottom: 2px; }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid.full { grid-template-columns: 1fr; }
+    @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+
+    .field label {
+      display: block;
+      font-size: 12px; font-weight: 600;
+      color: #7F8C8D;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1.5px solid #EAECEF;
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-size: 14px;
+      color: #2C3E50;
+      font-family: inherit;
+      transition: border 0.2s;
+      background: #FAFAFA;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none; border-color: #2C3E50; background: #fff;
+    }
+    .field textarea { resize: vertical; min-height: 90px; }
+
+    /* Photo Upload */
+    .photo-upload-area {
+      border: 2px dashed #BDC3C7;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #FAFAFA;
+      position: relative;
+    }
+    .photo-upload-area:hover { border-color: #2C3E50; background: #F0F2F5; }
+    .photo-upload-area input[type="file"] {
+      position: absolute; inset: 0;
+      opacity: 0; cursor: pointer;
+      width: 100%; height: 100%;
+      border: none; padding: 0;
+    }
+    .photo-upload-area .upload-icon { font-size: 28px; margin-bottom: 6px; }
+    .photo-upload-area .upload-text { font-size: 13px; color: #7F8C8D; }
+    .photo-preview-grid {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+    }
+    .photo-thumb {
+      position: relative; width: 80px; height: 80px;
+    }
+    .photo-thumb img {
+      width: 80px; height: 80px;
+      object-fit: cover; border-radius: 6px;
+      border: 1px solid #EAECEF;
+    }
+    .photo-thumb .remove-photo {
+      position: absolute; top: -6px; right: -6px;
+      width: 18px; height: 18px;
+      background: #E74C3C; color: #fff;
+      border-radius: 50%; border: none;
+      font-size: 11px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+
+    /* Checklist */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid #F4F5F7;
+      cursor: pointer;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li input[type="checkbox"] { display: none; }
+    .check-box {
+      width: 20px; height: 20px;
+      border: 2px solid #BDC3C7; border-radius: 4px;
+      flex-shrink: 0; margin-top: 2px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-size: 12px;
+    }
+    .checklist li.checked .check-box { background: #27AE60; border-color: #27AE60; color: #fff; }
+    .checklist li.checked .check-text { color: #95A5A6; text-decoration: line-through; }
+    .check-text { font-size: 14px; line-height: 1.5; }
+
+    .sub-group { margin-top: 20px; }
+    .sub-group:first-child { margin-top: 0; }
+    .sub-label {
+      font-size: 12px; font-weight: 700; color: #95A5A6;
+      letter-spacing: 1px; margin-bottom: 4px;
+      padding: 4px 10px; background: #F4F5F7;
+      border-radius: 4px; display: inline-block;
+    }
+
+    .section-block { display: none; }
+    .section-block.visible { display: block; }
+
+    .divider { height: 1px; background: #EAECEF; margin: 20px 0; }
+
+    .submit-btn {
+      width: 100%; padding: 14px;
+      background: #2C3E50; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; letter-spacing: 1px;
+      transition: background 0.2s; margin-top: 4px;
+    }
+    .submit-btn:hover { background: #1A252F; }
+
+    .success-msg {
+      display: none;
+      background: #EAFAF1; border: 1.5px solid #27AE60;
+      border-radius: 8px; padding: 16px 20px;
+      color: #27AE60; font-weight: 600;
+      text-align: center; margin-top: 12px;
+    }
+
+    .req { color: #E74C3C; margin-left: 2px; }
+
+    .hint { font-size: 12px; color: #BDC3C7; margin-top: 20px; text-align: center; }
+    .hint a { color: #95A5A6; text-decoration: none; cursor: pointer; }
+    .hint a:hover { color: #2C3E50; }
+
+    /* ===== ADMIN LOGIN ===== */
+    .login-overlay {
+      position: fixed; inset: 0;
+      background: rgba(44, 62, 80, 0.85);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .login-box {
+      background: #fff; border-radius: 16px;
+      padding: 40px 36px; width: 360px; max-width: 90vw;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .login-logo { font-size: 32px; text-align: center; margin-bottom: 8px; }
+    .login-box h2 { font-size: 18px; text-align: center; margin-bottom: 4px; }
+    .login-box p { font-size: 12px; color: #95A5A6; text-align: center; margin-bottom: 24px; }
+    .login-field { margin-bottom: 16px; }
+    .login-field label { display: block; font-size: 12px; font-weight: 600; color: #7F8C8D; margin-bottom: 5px; }
+    .login-field input {
+      width: 100%; border: 1.5px solid #EAECEF;
+      border-radius: 7px; padding: 10px 14px;
+      font-size: 14px; font-family: inherit;
+      transition: border 0.2s;
+    }
+    .login-field input:focus { outline: none; border-color: #2C3E50; }
+    .login-btn {
+      width: 100%; padding: 12px;
+      background: #2C3E50; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; letter-spacing: 1px;
+      margin-top: 4px;
+    }
+    .login-btn:hover { background: #1A252F; }
+    .login-error {
+      color: #E74C3C; font-size: 13px;
+      text-align: center; margin-top: 10px;
+      display: none;
+    }
+    .login-back {
+      text-align: center; margin-top: 16px;
+      font-size: 13px; color: #95A5A6;
+    }
+    .login-back a { color: #7F8C8D; cursor: pointer; text-decoration: none; }
+    .login-back a:hover { color: #2C3E50; }
+
+    /* ===== ADMIN DASHBOARD ===== */
+    .admin-page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+      min-height: 100vh;
+    }
+    .admin-header {
+      background: #1A252F;
+      color: #fff;
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .admin-header h1 { font-size: 18px; font-weight: 700; }
+    .admin-header p { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+    .admin-header-right { display: flex; gap: 10px; align-items: center; }
+    .admin-user { font-size: 13px; opacity: 0.7; }
+    .logout-btn {
+      padding: 7px 16px;
+      background: rgba(255,255,255,0.15);
+      color: #fff; border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 6px; cursor: pointer;
+      font-size: 13px; transition: background 0.2s;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.25); }
+
+    /* Stats */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 24px;
+    }
+    @media (max-width: 600px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      background: #fff; border-radius: 10px;
+      padding: 18px 20px; border-left: 4px solid #EAECEF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .stat-card.all { border-left-color: #2C3E50; }
+    .stat-card.open { border-left-color: #27AE60; }
+    .stat-card.close { border-left-color: #E74C3C; }
+    .stat-card.damage { border-left-color: #E67E22; }
+    .stat-num { font-size: 28px; font-weight: 700; line-height: 1; }
+    .stat-label { font-size: 12px; color: #7F8C8D; margin-top: 4px; }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex; gap: 8px; margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .filter-tab {
+      padding: 7px 16px; border-radius: 20px;
+      border: 1.5px solid #EAECEF;
+      background: #fff; cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      color: #7F8C8D; transition: all 0.15s;
+    }
+    .filter-tab:hover { border-color: #2C3E50; color: #2C3E50; }
+    .filter-tab.active { background: #2C3E50; border-color: #2C3E50; color: #fff; }
+    .filter-tab.active-open { background: #27AE60; border-color: #27AE60; color: #fff; }
+    .filter-tab.active-close { background: #E74C3C; border-color: #E74C3C; color: #fff; }
+    .filter-tab.active-damage { background: #E67E22; border-color: #E67E22; color: #fff; }
+
+    .admin-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+    }
+    .clear-all-btn {
+      padding: 7px 16px; border-radius: 6px;
+      border: 1.5px solid #E74C3C;
+      background: #fff; color: #E74C3C;
+      cursor: pointer; font-size: 13px; font-weight: 600;
+      transition: all 0.15s;
+    }
+    .clear-all-btn:hover { background: #E74C3C; color: #fff; }
+
+    /* Submissions */
+    .submissions-list { display: flex; flex-direction: column; gap: 12px; }
+    .sub-card {
+      background: #fff; border-radius: 10px;
+      border: 1.5px solid #EAECEF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+    .sub-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .sub-card-header {
+      padding: 16px 20px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      gap: 12px;
+    }
+    .sub-card-header:hover { background: #F9FAFB; }
+    .sub-badge {
+      padding: 4px 10px; border-radius: 12px;
+      font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .badge-open { background: #EAFAF1; color: #27AE60; }
+    .badge-close { background: #FDEDEC; color: #E74C3C; }
+    .badge-damage { background: #FEF9E7; color: #E67E22; }
+    .sub-info { flex: 1; min-width: 0; }
+    .sub-name { font-weight: 700; font-size: 15px; }
+    .sub-meta { font-size: 12px; color: #95A5A6; margin-top: 2px; }
+    .sub-status {
+      display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+    }
+    .handled-badge {
+      padding: 3px 10px; border-radius: 10px;
+      font-size: 11px; font-weight: 700;
+      background: #EBF5FB; color: #2E86C1;
+    }
+    .sub-chevron { font-size: 12px; color: #BDC3C7; transition: transform 0.2s; }
+    .sub-card.expanded .sub-chevron { transform: rotate(180deg); }
+
+    .sub-card-body {
+      display: none; padding: 0 20px 20px;
+      border-top: 1px solid #EAECEF;
+    }
+    .sub-card.expanded .sub-card-body { display: block; }
+
+    .detail-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 10px 20px; margin-top: 16px;
+    }
+    @media (max-width: 500px) { .detail-grid { grid-template-columns: 1fr; } }
+    .detail-item label {
+      font-size: 11px; font-weight: 700; color: #95A5A6;
+      letter-spacing: 0.8px; display: block; margin-bottom: 2px;
+    }
+    .detail-item .detail-val {
+      font-size: 14px; color: #2C3E50;
+    }
+    .detail-item.full { grid-column: 1 / -1; }
+
+    .checklist-display {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+    }
+    .check-pill {
+      padding: 3px 8px; border-radius: 10px;
+      font-size: 12px; background: #EAFAF1; color: #27AE60;
+    }
+
+    .photos-display { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .photos-display img {
+      width: 90px; height: 90px;
+      object-fit: cover; border-radius: 6px;
+      border: 1px solid #EAECEF; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .photos-display img:hover { opacity: 0.85; }
+
+    .sub-actions { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .action-btn {
+      padding: 7px 16px; border-radius: 6px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s;
+      border: 1.5px solid;
+    }
+    .btn-handle { border-color: #2E86C1; color: #2E86C1; background: #fff; }
+    .btn-handle:hover { background: #2E86C1; color: #fff; }
+    .btn-handle.done { border-color: #27AE60; color: #27AE60; background: #EAFAF1; }
+    .btn-delete { border-color: #E74C3C; color: #E74C3C; background: #fff; }
+    .btn-delete:hover { background: #E74C3C; color: #fff; }
+
+    .empty-state {
+      text-align: center; padding: 60px 20px;
+      color: #BDC3C7;
+    }
+    .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.9);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9999; cursor: pointer;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: 90vw; max-height: 90vh;
+      border-radius: 8px; box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    }
+    .lightbox-close {
+      position: fixed; top: 20px; right: 24px;
+      font-size: 28px; color: #fff; cursor: pointer; line-height: 1;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== VIEW: FORM ===== -->
+<div class="view active" id="view-form">
+<div class="page">
+
+  <div id="mainFormWrapper">
+    <!-- Header -->
+    <div class="header">
+      <h1>士林真道教會｜場地使用管理表</h1>
+      <p>開館回報 · 閉館回報 · 損壞通報</p>
+    </div>
+
+    <!-- Step 1: 回報類型 -->
+    <div class="card">
+      <div class="section-title">回報類型 <span class="req">*</span></div>
+      <div class="type-selector">
+        <button type="button" class="type-btn" data-type="open" onclick="selectType('open', this)">
+          <span class="type-label">🟢</span>開館回報
+        </button>
+        <button type="button" class="type-btn" data-type="close" onclick="selectType('close', this)">
+          <span class="type-label">🔴</span>閉館回報
+        </button>
+        <button type="button" class="type-btn" data-type="damage" onclick="selectType('damage', this)">
+          <span class="type-label">⚠️</span>損壞通報
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: 基本資料 -->
+    <div class="card">
+      <div class="section-title">基本資料</div>
+      <div class="grid">
+        <div class="field">
+          <label>填表人姓名 <span class="req">*</span></label>
+          <input type="text" id="f-name" placeholder="請輸入姓名" />
+        </div>
+        <div class="field">
+          <label>聯絡電話 <span class="req">*</span></label>
+          <input type="tel" id="f-phone" placeholder="0912-345-678" />
+        </div>
+        <div class="field">
+          <label>小組編號</label>
+          <input type="text" id="f-group" placeholder="例：AA001" />
+        </div>
+        <div class="field">
+          <label>所屬牧區</label>
+          <input type="text" id="f-district" placeholder="例：陳澤牧區" />
+        </div>
+        <div class="field">
+          <label>使用日期 <span class="req">*</span></label>
+          <input type="date" id="f-date" />
+        </div>
+        <div class="field">
+          <label>使用時間</label>
+          <input type="text" id="f-time" placeholder="例：14:00 ～ 17:00" />
+        </div>
+        <div class="field">
+          <label>場地區域</label>
+          <input type="text" id="f-area" placeholder="例：會議室、交誼廳、會堂" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 開館清單 -->
+    <div class="card section-block" id="block-open">
+      <div class="section-title">🟢 開館確認清單 <span class="req">*</span></div>
+      <ul class="checklist" id="checklist-open">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box">✓</div>
+          <span class="check-text">確認鑰匙已在手，開啟大門</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box">✓</div>
+          <span class="check-text">開啟所需區域燈光</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box">✓</div>
+          <span class="check-text">開啟冷氣</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box">✓</div>
+          <span class="check-text">檢查場地是否整潔，有異狀立即拍照通報</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" /><div class="check-box">✓</div>
+          <span class="check-text">確認廁所燈光、水電正常</span>
+        </li>
+      </ul>
+      <div class="divider"></div>
+      <div class="field">
+        <label>上傳照片（選填）</label>
+        <div class="photo-upload-area" onclick="triggerUpload('open-photos-input')">
+          <input type="file" id="open-photos-input" accept="image/*" multiple onchange="handlePhotoUpload(this, 'open-preview')" />
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">點擊或拖曳照片上傳<br><small style="color:#BDC3C7;">支援 JPG、PNG，可多張</small></div>
+        </div>
+        <div class="photo-preview-grid" id="open-preview"></div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>開館備註（選填）</label>
+        <textarea id="f-open-note" placeholder="如有異常狀況請說明…"></textarea>
+      </div>
+    </div>
+
+    <!-- 閉館清單 -->
+    <div class="card section-block" id="block-close">
+      <div class="section-title">🔴 閉館確認清單 <span class="req">*</span></div>
+
+      <div class="sub-group">
+        <div class="sub-label">垃圾處理</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">清理場地所有垃圾</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">清理廁所垃圾桶</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">所有垃圾袋一律換新</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">將垃圾袋封口，搬至 B1 垃圾場丟棄</span></li>
+        </ul>
+      </div>
+
+      <div class="sub-group">
+        <div class="sub-label">環境清潔</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">掃地（使用區域）</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">拖地（使用區域）</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">桌椅歸位</span></li>
+        </ul>
+      </div>
+
+      <div class="sub-group">
+        <div class="sub-label">電器設備</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">確認冷氣全部關閉</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">確認所有燈光關閉</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">確認電器、音響、投影設備關閉</span></li>
+        </ul>
+      </div>
+
+      <div class="sub-group">
+        <div class="sub-label">安全確認</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">確認所有窗戶關閉</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">確認廁所門關閉</span></li>
+          <li onclick="toggleCheck(this)"><input type="checkbox" /><div class="check-box">✓</div><span class="check-text">確認大門上鎖</span></li>
+        </ul>
+      </div>
+
+      <div class="divider"></div>
+      <div class="grid">
+        <div class="field">
+          <label>離場時間 <span class="req">*</span></label>
+          <input type="time" id="f-leave-time" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>確認照片 <span class="req">*</span></label>
+        <div style="font-size:12px; color:#7F8C8D; margin-bottom:8px;">📌 請從門外往內拍攝，確認室內燈光全部關閉</div>
+        <div class="photo-upload-area" onclick="triggerUpload('close-photos-input')">
+          <input type="file" id="close-photos-input" accept="image/*" multiple onchange="handlePhotoUpload(this, 'close-preview')" />
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">點擊上傳從外往內拍的確認照片<br><small style="color:#BDC3C7;">須至少上傳一張，確認室內燈全關</small></div>
+        </div>
+        <div class="photo-preview-grid" id="close-preview"></div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>閉館備註（選填）</label>
+        <textarea id="f-close-note" placeholder="如有異常狀況請說明…"></textarea>
+      </div>
+    </div>
+
+    <!-- 損壞通報 -->
+    <div class="card section-block" id="block-damage">
+      <div class="section-title">⚠️ 損壞通報</div>
+      <div class="grid full">
+        <div class="field">
+          <label>損壞位置／設備 <span class="req">*</span></label>
+          <input type="text" id="f-damage-loc" placeholder="例：B1 冷氣遙控器、廁所燈管" />
+        </div>
+        <div class="field">
+          <label>損壞狀況描述 <span class="req">*</span></label>
+          <textarea id="f-damage-desc" placeholder="請詳細說明損壞情形，方便同工處理…" style="min-height:120px;"></textarea>
+        </div>
+        <div class="field">
+          <label>發現時間</label>
+          <input type="datetime-local" id="f-damage-time" />
+        </div>
+        <div class="field">
+          <label>上傳照片（選填）</label>
+          <div class="photo-upload-area" onclick="triggerUpload('damage-photos-input')">
+            <input type="file" id="damage-photos-input" accept="image/*" multiple onchange="handlePhotoUpload(this, 'damage-preview')" />
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">點擊或拖曳照片上傳<br><small style="color:#BDC3C7;">支援 JPG、PNG，可多張</small></div>
+          </div>
+          <div class="photo-preview-grid" id="damage-preview"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 送出 -->
+    <div class="card">
+      <button type="button" class="submit-btn" onclick="submitForm()">送出回報</button>
+      <div class="success-msg" id="successMsg">✅ 已成功送出，感謝你的回報！</div>
+      <p class="hint">送出後資料將儲存至管理系統 ·
+        <a onclick="showAdminLogin()">管理者登入</a>
+      </p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== VIEW: ADMIN DASHBOARD ===== -->
+<div class="view" id="view-admin">
+  <div class="admin-header">
+    <div>
+      <h1>🏛️ 場地管理後台</h1>
+      <p>士林真道教會｜場地使用管理系統</p>
+    </div>
+    <div class="admin-header-right">
+      <span class="admin-user" id="admin-user-label"></span>
+      <button class="logout-btn" onclick="logout()">登出</button>
+    </div>
+  </div>
+
+  <div class="admin-page">
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card all">
+        <div class="stat-num" id="stat-all">0</div>
+        <div class="stat-label">全部回報</div>
+      </div>
+      <div class="stat-card open">
+        <div class="stat-num" id="stat-open">0</div>
+        <div class="stat-label">🟢 開館</div>
+      </div>
+      <div class="stat-card close">
+        <div class="stat-num" id="stat-close">0</div>
+        <div class="stat-label">🔴 閉館</div>
+      </div>
+      <div class="stat-card damage">
+        <div class="stat-num" id="stat-damage">0</div>
+        <div class="stat-label">⚠️ 損壞</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="admin-toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all" onclick="setFilter('all', this)">全部</button>
+        <button class="filter-tab" data-filter="開館回報" onclick="setFilter('開館回報', this)">🟢 開館</button>
+        <button class="filter-tab" data-filter="閉館回報" onclick="setFilter('閉館回報', this)">🔴 閉館</button>
+        <button class="filter-tab" data-filter="損壞通報" onclick="setFilter('損壞通報', this)">⚠️ 損壞</button>
+      </div>
+      <button class="clear-all-btn" onclick="clearAllData()">🗑️ 清除全部資料</button>
+    </div>
+
+    <!-- Submissions -->
+    <div class="submissions-list" id="submissions-list"></div>
+  </div>
+</div>
+
+<!-- ===== ADMIN LOGIN OVERLAY ===== -->
+<div class="login-overlay" id="loginOverlay" style="display:none;">
+  <div class="login-box">
+    <div class="login-logo">🔐</div>
+    <h2>管理者登入</h2>
+    <p>士林真道教會場地管理系統</p>
+    <div class="login-field">
+      <label>電子信箱</label>
+      <input type="email" id="login-email" placeholder="請輸入管理者帳號" onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <div class="login-field">
+      <label>密碼</label>
+      <input type="password" id="login-pwd" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') doLogin()" />
+    </div>
+    <button class="login-btn" onclick="doLogin()">登入</button>
+    <div class="login-error" id="login-error">帳號或密碼錯誤，請再試一次</div>
+    <div class="login-back"><a onclick="hideAdminLogin()">← 返回表單</a></div>
+  </div>
+</div>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="lightbox-close">✕</span>
+  <img id="lightbox-img" src="" alt="" />
+</div>
+
+<script>
+  // ===== CONFIG =====
+  const ADMIN_EMAIL = 'green@gmail.com';
+  const ADMIN_PWD   = '23116767';
+  const STORAGE_KEY = 'shilintrueway_submissions';
+
+  // ===== STATE =====
+  let currentType = '';
+  let uploadedPhotos = { open: [], close: [], damage: [] }; // arrays of base64
+  let currentFilter = 'all';
+
+  // ===== FORM LOGIC =====
+  function selectType(type, btn) {
+    document.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+    btn.classList.add('active-' + type);
+    currentType = type === 'open' ? '開館回報' : type === 'close' ? '閉館回報' : '損壞通報';
+    document.querySelectorAll('.section-block').forEach(b => b.classList.remove('visible'));
+    document.getElementById('block-' + type).classList.add('visible');
+  }
+
+  function toggleCheck(li) {
+    li.classList.toggle('checked');
+    const cb = li.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+  }
+
+  // ===== PHOTO UPLOAD =====
+  function triggerUpload(inputId) {
+    // click is handled by the input itself (overlay pattern)
+  }
+
+  function handlePhotoUpload(input, previewId) {
+    const files = Array.from(input.files);
+    const section = input.id.includes('open') ? 'open' : input.id.includes('close') ? 'close' : 'damage';
+    const preview = document.getElementById(previewId);
+
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        compressImage(e.target.result, (compressed) => {
+          uploadedPhotos[section].push(compressed);
+          renderPhotoThumb(preview, compressed, section, uploadedPhotos[section].length - 1);
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // reset input so same file can be re-selected
+    input.value = '';
+  }
+
+  function compressImage(dataUrl, callback) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      if (h > MAX) { w = Math.round(w * MAX / h); h = MAX; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL('image/jpeg', 0.75));
+    };
+    img.src = dataUrl;
+  }
+
+  function renderPhotoThumb(container, src, section, idx) {
+    const thumb = document.createElement('div');
+    thumb.className = 'photo-thumb';
+    thumb.dataset.section = section;
+    thumb.dataset.idx = idx;
+    thumb.innerHTML = `
+      <img src="${src}" onclick="openLightbox('${src}')" alt="照片" />
+      <button class="remove-photo" onclick="removePhoto(this, '${section}', ${idx})">✕</button>
+    `;
+    container.appendChild(thumb);
+  }
+
+  function removePhoto(btn, section, idx) {
+    btn.parentElement.remove();
+    uploadedPhotos[section].splice(idx, 1);
+    // re-index remaining thumbs
+    const container = document.getElementById(section === 'open' ? 'open-preview' : section === 'close' ? 'close-preview' : 'damage-preview');
+    Array.from(container.querySelectorAll('.photo-thumb')).forEach((t, i) => {
+      t.dataset.idx = i;
+      t.querySelector('.remove-photo').setAttribute('onclick', `removePhoto(this, '${section}', ${i})`);
+    });
+  }
+
+  // ===== SUBMIT =====
+  function submitForm() {
+    if (!currentType) { alert('請先選擇回報類型'); return; }
+    const name = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const date = document.getElementById('f-date').value;
+    if (!name || !phone || !date) { alert('請填寫姓名、聯絡電話、使用日期'); return; }
+
+    // Check type-specific required fields
+    if (currentType === '開館回報') {
+      const total = document.querySelectorAll('#checklist-open li').length;
+      const checked = document.querySelectorAll('#checklist-open li.checked').length;
+      if (checked < total) { alert(`開館確認清單尚未全部勾選（${checked}／${total}），請確認所有項目後再送出`); return; }
+    }
+    if (currentType === '閉館回報') {
+      const total = document.querySelectorAll('#block-close .checklist li').length;
+      const checked = document.querySelectorAll('#block-close .checklist li.checked').length;
+      if (checked < total) { alert(`閉館確認清單尚未全部勾選（${checked}／${total}），請確認所有項目後再送出`); return; }
+    }
+    if (currentType === '損壞通報') {
+      const loc = document.getElementById('f-damage-loc').value.trim();
+      const desc = document.getElementById('f-damage-desc').value.trim();
+      if (!loc || !desc) { alert('損壞通報需填寫損壞位置和描述'); return; }
+    }
+    if (currentType === '閉館回報') {
+      const leaveTime = document.getElementById('f-leave-time').value;
+      if (!leaveTime) { alert('閉館回報需填寫離場時間'); return; }
+      if (uploadedPhotos.close.length === 0) { alert('閉館回報需上傳從外往內拍的確認照片（至少一張）'); return; }
+    }
+
+    // Collect checklist items
+    const checklists = {};
+    if (currentType === '開館回報') {
+      checklists['開館確認'] = Array.from(document.querySelectorAll('#checklist-open li.checked .check-text')).map(el => el.textContent);
+    }
+    if (currentType === '閉館回報') {
+      checklists['閉館確認'] = Array.from(document.querySelectorAll('#block-close li.checked .check-text')).map(el => el.textContent);
+    }
+
+    const record = {
+      id: Date.now(),
+      type: currentType,
+      name, phone,
+      group: document.getElementById('f-group').value.trim(),
+      district: document.getElementById('f-district').value.trim(),
+      date,
+      time: document.getElementById('f-time').value.trim(),
+      area: document.getElementById('f-area').value.trim(),
+      checklists,
+      openNote: document.getElementById('f-open-note').value.trim(),
+      closeNote: document.getElementById('f-close-note').value.trim(),
+      leaveTime: document.getElementById('f-leave-time').value,
+      damageLoc: document.getElementById('f-damage-loc').value.trim(),
+      damageDesc: document.getElementById('f-damage-desc').value.trim(),
+      damageTime: document.getElementById('f-damage-time').value,
+      photos: currentType === '開館回報' ? [...uploadedPhotos.open]
+              : currentType === '閉館回報' ? [...uploadedPhotos.close]
+              : [...uploadedPhotos.damage],
+      handled: false,
+      submittedAt: new Date().toLocaleString('zh-TW', { hour12: false })
+    };
+
+    // Save
+    const existing = getSubmissions();
+    existing.unshift(record);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+
+    // Reset form
+    const btn = document.querySelector('.submit-btn');
+    btn.style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+
+    setTimeout(() => {
+      resetForm();
+      btn.style.display = 'block';
+      document.getElementById('successMsg').style.display = 'none';
+    }, 2500);
+  }
+
+  function resetForm() {
+    currentType = '';
+    uploadedPhotos = { open: [], close: [], damage: [] };
+    document.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+    document.querySelectorAll('.section-block').forEach(b => b.classList.remove('visible'));
+    document.querySelectorAll('.checklist li').forEach(li => li.classList.remove('checked'));
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+    ['f-name','f-phone','f-group','f-district','f-time','f-area',
+     'f-open-note','f-close-note','f-leave-time',
+     'f-damage-loc','f-damage-desc','f-damage-time'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('f-date').value = '';
+    document.getElementById('open-preview').innerHTML = '';
+    document.getElementById('close-preview').innerHTML = '';
+    document.getElementById('damage-preview').innerHTML = '';
+  }
+
+  // ===== ADMIN LOGIN =====
+  function showAdminLogin() {
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-pwd').value = '';
+    document.getElementById('login-error').style.display = 'none';
+    setTimeout(() => document.getElementById('login-email').focus(), 100);
+  }
+
+  function hideAdminLogin() {
+    document.getElementById('loginOverlay').style.display = 'none';
+  }
+
+  function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const pwd = document.getElementById('login-pwd').value;
+    if (email === ADMIN_EMAIL && pwd === ADMIN_PWD) {
+      sessionStorage.setItem('adminLoggedIn', '1');
+      hideAdminLogin();
+      showAdmin();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('adminLoggedIn');
+    showView('view-form');
+  }
+
+  // ===== ADMIN DASHBOARD =====
+  function showAdmin() {
+    document.getElementById('admin-user-label').textContent = ADMIN_EMAIL;
+    showView('view-admin');
+    renderDashboard();
+  }
+
+  function showView(id) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function getSubmissions() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-tab').forEach(t => {
+      t.className = 'filter-tab';
+    });
+    if (filter === 'all') btn.classList.add('active');
+    else if (filter === '開館回報') btn.classList.add('active-open');
+    else if (filter === '閉館回報') btn.classList.add('active-close');
+    else if (filter === '損壞通報') btn.classList.add('active-damage');
+    renderSubmissions();
+  }
+
+  function renderDashboard() {
+    const subs = getSubmissions();
+    document.getElementById('stat-all').textContent = subs.length;
+    document.getElementById('stat-open').textContent = subs.filter(s => s.type === '開館回報').length;
+    document.getElementById('stat-close').textContent = subs.filter(s => s.type === '閉館回報').length;
+    document.getElementById('stat-damage').textContent = subs.filter(s => s.type === '損壞通報').length;
+    renderSubmissions();
+  }
+
+  function renderSubmissions() {
+    const subs = getSubmissions();
+    const filtered = currentFilter === 'all' ? subs : subs.filter(s => s.type === currentFilter);
+    const container = document.getElementById('submissions-list');
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>目前沒有回報資料</p></div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(s => buildCard(s)).join('');
+  }
+
+  function buildCard(s) {
+    const typeMap = { '開館回報': 'open', '閉館回報': 'close', '損壞通報': 'damage' };
+    const t = typeMap[s.type] || 'open';
+
+    const photos = (s.photos || []).map(p =>
+      `<img src="${p}" onclick="openLightbox('${p}')" title="點擊放大" />`
+    ).join('');
+
+    const checklists = s.checklists || {};
+    const checkItems = Object.values(checklists).flat();
+    const checkPills = checkItems.length
+      ? `<div class="checklist-display">${checkItems.map(c => `<span class="check-pill">✓ ${c}</span>`).join('')}</div>`
+      : '<span style="color:#BDC3C7;font-size:13px;">無勾選項目</span>';
+
+    let extraFields = '';
+    if (s.type === '開館回報') {
+      extraFields = `
+        <div class="detail-item full"><label>開館確認</label>${checkPills}</div>
+        ${s.openNote ? `<div class="detail-item full"><label>備註</label><div class="detail-val">${esc(s.openNote)}</div></div>` : ''}
+      `;
+    } else if (s.type === '閉館回報') {
+      extraFields = `
+        <div class="detail-item"><label>離場時間</label><div class="detail-val">${esc(s.leaveTime) || '—'}</div></div>
+        <div class="detail-item full"><label>閉館確認</label>${checkPills}</div>
+        ${s.closeNote ? `<div class="detail-item full"><label>備註</label><div class="detail-val">${esc(s.closeNote)}</div></div>` : ''}
+      `;
+    } else if (s.type === '損壞通報') {
+      extraFields = `
+        <div class="detail-item full"><label>損壞位置／設備</label><div class="detail-val">${esc(s.damageLoc) || '—'}</div></div>
+        <div class="detail-item full"><label>損壞狀況描述</label><div class="detail-val">${esc(s.damageDesc) || '—'}</div></div>
+        ${s.damageTime ? `<div class="detail-item"><label>發現時間</label><div class="detail-val">${esc(s.damageTime)}</div></div>` : ''}
+      `;
+    }
+
+    const photosSection = photos
+      ? `<div class="detail-item full"><label>照片</label><div class="photos-display">${photos}</div></div>`
+      : '';
+
+    const handledLabel = s.handled ? `<span class="handled-badge">✔ 已處理</span>` : '';
+    const handleText = s.handled ? '取消標記' : '標記已處理';
+    const handleClass = s.handled ? 'action-btn btn-handle done' : 'action-btn btn-handle';
+
+    return `
+      <div class="sub-card" id="card-${s.id}">
+        <div class="sub-card-header" onclick="toggleCard(${s.id})">
+          <span class="sub-badge badge-${t}">${s.type}</span>
+          <div class="sub-info">
+            <div class="sub-name">${esc(s.name)}</div>
+            <div class="sub-meta">${esc(s.date)}　${esc(s.area) || ''}　${esc(s.submittedAt)}</div>
+          </div>
+          <div class="sub-status">
+            ${handledLabel}
+            <span class="sub-chevron">▼</span>
+          </div>
+        </div>
+        <div class="sub-card-body">
+          <div class="detail-grid">
+            <div class="detail-item"><label>填表人</label><div class="detail-val">${esc(s.name)}</div></div>
+            <div class="detail-item"><label>聯絡電話</label><div class="detail-val">${esc(s.phone)}</div></div>
+            <div class="detail-item"><label>小組編號</label><div class="detail-val">${esc(s.group) || '—'}</div></div>
+            <div class="detail-item"><label>所屬牧區</label><div class="detail-val">${esc(s.district) || '—'}</div></div>
+            <div class="detail-item"><label>使用日期</label><div class="detail-val">${esc(s.date)}</div></div>
+            <div class="detail-item"><label>使用時間</label><div class="detail-val">${esc(s.time) || '—'}</div></div>
+            <div class="detail-item"><label>場地區域</label><div class="detail-val">${esc(s.area) || '—'}</div></div>
+            <div class="detail-item"><label>送出時間</label><div class="detail-val">${esc(s.submittedAt)}</div></div>
+            ${extraFields}
+            ${photosSection}
+          </div>
+          <div class="sub-actions">
+            <button class="${handleClass}" onclick="toggleHandled(${s.id})">${handleText}</button>
+            <button class="action-btn btn-delete" onclick="deleteSubmission(${s.id})">🗑️ 刪除</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function toggleCard(id) {
+    const card = document.getElementById('card-' + id);
+    card.classList.toggle('expanded');
+  }
+
+  function toggleHandled(id) {
+    const subs = getSubmissions();
+    const s = subs.find(x => x.id === id);
+    if (s) { s.handled = !s.handled; }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(subs));
+    renderDashboard();
+    // re-expand the card
+    setTimeout(() => {
+      const card = document.getElementById('card-' + id);
+      if (card) card.classList.add('expanded');
+    }, 10);
+  }
+
+  function deleteSubmission(id) {
+    if (!confirm('確定要刪除這筆回報嗎？')) return;
+    const subs = getSubmissions().filter(s => s.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(subs));
+    renderDashboard();
+  }
+
+  function clearAllData() {
+    if (!confirm('確定要清除所有回報資料？此操作無法復原。')) return;
+    localStorage.removeItem(STORAGE_KEY);
+    renderDashboard();
+  }
+
+  // ===== LIGHTBOX =====
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightbox-img').src = '';
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ===== INIT =====
+  // Set today's date
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+
+  // Check if already logged in
+  if (sessionStorage.getItem('adminLoggedIn') === '1') {
+    // stay on form page on reload
+    sessionStorage.removeItem('adminLoggedIn');
+  }
+</script>
+</body>
+</html>
