@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>士林真道教會｜場地使用管理表</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: #F4F5F7;
+      color: #2C3E50;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 36px auto;
+      padding: 0 16px 60px;
+    }
+
+    /* Header */
+    .header {
+      background: #2C3E50;
+      color: #fff;
+      border-radius: 12px 12px 0 0;
+      padding: 28px 32px 24px;
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .header p {
+      margin-top: 4px;
+      font-size: 13px;
+      opacity: 0.6;
+    }
+
+    /* Card */
+    .card {
+      background: #fff;
+      padding: 28px 32px;
+      border-bottom: 1px solid #EAECEF;
+    }
+    .card:last-of-type {
+      border-radius: 0 0 12px 12px;
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #7F8C8D;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+    }
+
+    /* Type Selector */
+    .type-selector {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .type-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 8px;
+      border: 2px solid #EAECEF;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #7F8C8D;
+      text-align: center;
+      transition: all 0.2s;
+    }
+    .type-btn:hover { border-color: #BDC3C7; color: #2C3E50; }
+    .type-btn.active-open  { border-color: #27AE60; background: #EAFAF1; color: #27AE60; }
+    .type-btn.active-close { border-color: #E74C3C; background: #FDEDEC; color: #E74C3C; }
+    .type-btn.active-damage{ border-color: #E67E22; background: #FEF9E7; color: #E67E22; }
+    .type-label { font-size: 18px; display: block; margin-bottom: 2px; }
+
+    /* Form Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .grid.full { grid-template-columns: 1fr; }
+    @media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #7F8C8D;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1.5px solid #EAECEF;
+      border-radius: 7px;
+      padding: 9px 12px;
+      font-size: 14px;
+      color: #2C3E50;
+      font-family: inherit;
+      transition: border 0.2s;
+      background: #FAFAFA;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: #2C3E50;
+      background: #fff;
+    }
+    .field textarea { resize: vertical; min-height: 90px; }
+
+    /* Checklist */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #F4F5F7;
+      cursor: pointer;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li input[type="checkbox"] { display: none; }
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #BDC3C7;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-size: 12px;
+    }
+    .checklist li.checked .check-box {
+      background: #27AE60;
+      border-color: #27AE60;
+      color: #fff;
+    }
+    .checklist li.checked .check-text {
+      color: #95A5A6;
+      text-decoration: line-through;
+    }
+    .check-text { font-size: 14px; line-height: 1.5; }
+
+    /* Sub-group */
+    .sub-group { margin-top: 20px; }
+    .sub-group:first-child { margin-top: 0; }
+    .sub-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #95A5A6;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      padding: 4px 10px;
+      background: #F4F5F7;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* Section toggle */
+    .section-block { display: none; }
+    .section-block.visible { display: block; }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: #EAECEF;
+      margin: 20px 0;
+    }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: #2C3E50;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+    .submit-btn:hover { background: #1A252F; }
+    .submit-btn:active { transform: scale(0.99); }
+
+    /* Success */
+    .success-msg {
+      display: none;
+      background: #EAFAF1;
+      border: 1.5px solid #27AE60;
+      border-radius: 8px;
+      padding: 16px 20px;
+      color: #27AE60;
+      font-weight: 600;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    /* Required star */
+    .req { color: #E74C3C; margin-left: 2px; }
+
+    .hint {
+      font-size: 12px;
+      color: #BDC3C7;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .hint a { color: #BDC3C7; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <form id="mainForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>士林真道教會｜場地使用管理表</h1>
+      <p>開館回報 · 閉館回報 · 損壞通報</p>
+    </div>
+
+    <!-- Step 1: 回報類型 -->
+    <div class="card">
+      <div class="section-title">回報類型 <span class="req">*</span></div>
+      <div class="type-selector">
+        <button type="button" class="type-btn" data-type="open" onclick="selectType('open', this)">
+          <span class="type-label">🟢</span>開館回報
+        </button>
+        <button type="button" class="type-btn" data-type="close" onclick="selectType('close', this)">
+          <span class="type-label">🔴</span>閉館回報
+        </button>
+        <button type="button" class="type-btn" data-type="damage" onclick="selectType('damage', this)">
+          <span class="type-label">⚠️</span>損壞通報
+        </button>
+      </div>
+      <input type="hidden" name="回報類型" id="typeInput" required />
+    </div>
+
+    <!-- Step 2: 基本資料 -->
+    <div class="card">
+      <div class="section-title">基本資料</div>
+      <div class="grid">
+        <div class="field">
+          <label>填表人姓名 <span class="req">*</span></label>
+          <input type="text" name="填表人姓名" placeholder="請輸入姓名" required />
+        </div>
+        <div class="field">
+          <label>聯絡電話 <span class="req">*</span></label>
+          <input type="tel" name="聯絡電話" placeholder="0912-345-678" required />
+        </div>
+        <div class="field">
+          <label>小組編號</label>
+          <input type="text" name="小組編號" placeholder="例：AA001" />
+        </div>
+        <div class="field">
+          <label>所屬牧區</label>
+          <input type="text" name="所屬牧區" placeholder="例：陳澤牧區" />
+        </div>
+        <div class="field">
+          <label>使用日期 <span class="req">*</span></label>
+          <input type="date" name="使用日期" required />
+        </div>
+        <div class="field">
+          <label>使用時間</label>
+          <input type="text" name="使用時間" placeholder="例：14:00 ～ 17:00" />
+        </div>
+        <div class="field">
+          <label>場地區域</label>
+          <input type="text" name="場地區域" placeholder="例：會議室、交誼廳、會堂" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 開館清單 -->
+    <div class="card section-block" id="block-open">
+      <div class="section-title">🟢 開館確認清單</div>
+      <ul class="checklist" id="checklist-open">
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" name="開館_鑰匙大門" /><div class="check-box">✓</div>
+          <span class="check-text">確認鑰匙已在手，開啟大門</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" name="開館_燈光" /><div class="check-box">✓</div>
+          <span class="check-text">開啟所需區域燈光</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" name="開館_冷氣" /><div class="check-box">✓</div>
+          <span class="check-text">開啟冷氣</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" name="開館_場地檢查" /><div class="check-box">✓</div>
+          <span class="check-text">檢查場地是否整潔，有異狀立即拍照通報</span>
+        </li>
+        <li onclick="toggleCheck(this)">
+          <input type="checkbox" name="開館_廁所" /><div class="check-box">✓</div>
+          <span class="check-text">確認廁所燈光、水電正常</span>
+        </li>
+      </ul>
+      <div class="divider"></div>
+      <div class="field">
+        <label>照片連結（選填）</label>
+        <input type="url" name="開館照片連結" placeholder="請上傳至 Google 相簿後貼上連結" />
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>開館備註（選填）</label>
+        <textarea name="開館備註" placeholder="如有異常狀況請說明…"></textarea>
+      </div>
+    </div>
+
+    <!-- 閉館清單 -->
+    <div class="card section-block" id="block-close">
+      <div class="section-title">🔴 閉館確認清單</div>
+
+      <div class="sub-group">
+        <div class="sub-label">垃圾處理</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_場地垃圾" /><div class="check-box">✓</div>
+            <span class="check-text">清理場地所有垃圾</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_廁所垃圾" /><div class="check-box">✓</div>
+            <span class="check-text">清理廁所垃圾桶</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_垃圾袋換新" /><div class="check-box">✓</div>
+            <span class="check-text">所有垃圾袋一律換新</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_B1丟棄" /><div class="check-box">✓</div>
+            <span class="check-text">將垃圾袋封口，搬至 B1 垃圾場丟棄</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sub-group">
+        <div class="sub-label">環境清潔</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_掃地" /><div class="check-box">✓</div>
+            <span class="check-text">掃地（使用區域）</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_拖地" /><div class="check-box">✓</div>
+            <span class="check-text">拖地（使用區域）</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_桌椅歸位" /><div class="check-box">✓</div>
+            <span class="check-text">桌椅歸位</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sub-group">
+        <div class="sub-label">電器設備</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_冷氣關閉" /><div class="check-box">✓</div>
+            <span class="check-text">確認冷氣全部關閉</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_燈光關閉" /><div class="check-box">✓</div>
+            <span class="check-text">確認所有燈光關閉</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_電器關閉" /><div class="check-box">✓</div>
+            <span class="check-text">確認電器、音響、投影設備關閉</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sub-group">
+        <div class="sub-label">安全確認</div>
+        <ul class="checklist">
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_窗戶" /><div class="check-box">✓</div>
+            <span class="check-text">確認所有窗戶關閉</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_廁所門" /><div class="check-box">✓</div>
+            <span class="check-text">確認廁所門關閉</span>
+          </li>
+          <li onclick="toggleCheck(this)">
+            <input type="checkbox" name="閉館_大門上鎖" /><div class="check-box">✓</div>
+            <span class="check-text">確認大門上鎖</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="divider"></div>
+      <div class="grid">
+        <div class="field">
+          <label>離場時間 <span class="req">*</span></label>
+          <input type="time" name="離場時間" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>閉館備註（選填）</label>
+        <textarea name="閉館備註" placeholder="如有異常狀況請說明…"></textarea>
+      </div>
+    </div>
+
+    <!-- 損壞通報 -->
+    <div class="card section-block" id="block-damage">
+      <div class="section-title">⚠️ 損壞通報</div>
+      <div class="grid full">
+        <div class="field">
+          <label>損壞位置／設備 <span class="req">*</span></label>
+          <input type="text" name="損壞位置" placeholder="例：B1 冷氣遙控器、廁所燈管" />
+        </div>
+        <div class="field">
+          <label>損壞狀況描述 <span class="req">*</span></label>
+          <textarea name="損壞描述" placeholder="請詳細說明損壞情形，方便同工處理…" style="min-height:120px;"></textarea>
+        </div>
+        <div class="field">
+          <label>發現時間</label>
+          <input type="datetime-local" name="損壞發現時間" />
+        </div>
+        <div class="field">
+          <label>照片連結（選填）</label>
+          <input type="url" name="損壞照片連結" placeholder="請上傳至 Google 相簿後貼上連結" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 送出 -->
+    <div class="card">
+      <button type="submit" class="submit-btn">送出回報</button>
+      <div class="success-msg" id="successMsg">✅ 已成功送出，感謝你的回報！</div>
+      <p class="hint">送出後將自動通知場地管理同工 ·
+        如有急事請聯絡 <a href="#">負責同工</a>
+      </p>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // 切換回報類型
+  function selectType(type, btn) {
+    // 清除舊選取
+    document.querySelectorAll('.type-btn').forEach(b => {
+      b.className = 'type-btn';
+    });
+    // 套用新選取
+    btn.classList.add('active-' + type);
+    document.getElementById('typeInput').value =
+      type === 'open' ? '開館回報' : type === 'close' ? '閉館回報' : '損壞通報';
+
+    // 顯示對應區塊
+    document.querySelectorAll('.section-block').forEach(b => b.classList.remove('visible'));
+    document.getElementById('block-' + type).classList.add('visible');
+  }
+
+  // 勾選項目
+  function toggleCheck(li) {
+    li.classList.toggle('checked');
+    const cb = li.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+  }
+
+  // Formspree AJAX 送出
+  const form = document.getElementById('mainForm');
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // 驗證：必須選類型
+    if (!document.getElementById('typeInput').value) {
+      alert('請先選擇回報類型');
+      return;
+    }
+
+    const btn = form.querySelector('.submit-btn');
+    btn.textContent = '送出中…';
+    btn.disabled = true;
+
+    try {
+      const data = new FormData(form);
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        btn.style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        form.reset();
+        document.querySelectorAll('.type-btn').forEach(b => b.className = 'type-btn');
+        document.querySelectorAll('.section-block').forEach(b => b.classList.remove('visible'));
+        document.querySelectorAll('.checklist li').forEach(li => li.classList.remove('checked'));
+      } else {
+        btn.textContent = '送出失敗，請再試一次';
+        btn.disabled = false;
+      }
+    } catch {
+      btn.textContent = '網路錯誤，請再試一次';
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
